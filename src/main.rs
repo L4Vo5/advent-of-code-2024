@@ -10,8 +10,8 @@ fn main() {
     let part = 1;
 
     let result = match (day, part) {
-        (1, 1) => day1::part_1(&read_file("1")),
-        (1, 2) => day1::part_2(&read_file("1")),
+        (1, 1) => day1::part1(&read_file("1")),
+        (1, 2) => day1::part2(&read_file("1")),
         (_, _) => panic!(),
     };
 
