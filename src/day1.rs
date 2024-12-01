@@ -2,7 +2,7 @@ use crate::utils::*;
 
 /// AoC placement:
 /// Time 00:03:10 rank 857
-pub fn part_1(whole: &str) -> String {
+pub fn part1(whole: &str) -> String {
     let lines = get_lines(&whole);
     let nums = get_numbers(&whole);
     let mut nums_1 = vec![];
@@ -26,7 +26,7 @@ pub fn part_1(whole: &str) -> String {
 
 /// AoC placement:
 /// Time 00:04:52 rank 710
-pub fn part_2(whole: &str) -> String {
+pub fn part2(whole: &str) -> String {
 
     let lines = get_lines(&whole);
     let nums = get_numbers(&whole);
