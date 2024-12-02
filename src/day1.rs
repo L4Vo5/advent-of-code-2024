@@ -1,4 +1,5 @@
 use crate::utils::*;
+use std::collections::{hash_map::Entry, HashMap};
 
 pub fn part1(whole: &str) -> i64 {
     // Take advantage of the fact that the format for each line is:
@@ -66,8 +67,8 @@ pub fn part2(whole: &str) -> i64 {
     const ZERO: u8 = b'0';
     let whole = whole.as_bytes();
     let line_count = whole.len() / FORMAT.len();
-    let mut nums_1 = vec![0; line_count];
-    let mut nums_2 = vec![0; line_count];
+    let mut sum = 0;
+    let mut hash: HashMap<u32, (u16, u16)> = HashMap::with_capacity(line_count);
     for (i, chunk) in whole.chunks_exact(FORMAT.len()).enumerate() {
         let n1 = 
         (chunk[4] - ZERO) as u32 +
@@ -81,20 +82,10 @@ pub fn part2(whole: &str) -> i64 {
         (chunk[10] - ZERO) as u32 * 100 +
         (chunk[9] - ZERO) as u32 * 1000 +
         (chunk[8] - ZERO) as u32 * 10000;
-        nums_1[i] = n1;
-        nums_2[i] = n2;
+        sum += hash.entry(n1).and_modify(|x| {x.0 += 1}).or_insert((1, 0)).1 as u32 * n1;
+        sum += hash.entry(n2).and_modify(|x| {x.1 += 1}).or_insert((0, 1)).0 as u32 * n2;
     }
-    let mut sum = 0;
-    for i in 0..nums_1.len() {
-        let n = nums_1[i];
-        let mut a = 0;
-        for j in 0..nums_2.len() {
-            if nums_2[j] == n {
-                a += 1;
-            }
-        }
-        sum += n * a;
-    }
+    // println!("{hash:?}");
     sum as i64
 }
 
