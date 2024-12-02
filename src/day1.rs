@@ -1,5 +1,5 @@
 use crate::utils::*;
-use std::collections::{hash_map::Entry, HashMap};
+use ahash::{HashMap, HashMapExt};
 
 pub fn part1(whole: &str) -> i64 {
     // Take advantage of the fact that the format for each line is:
