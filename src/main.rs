@@ -10,7 +10,7 @@ mod day3;
 
 fn main() {
     let day = 3;
-    let part = 1;
+    let part = 2;
 
     let contents = read_file(&day.to_string());
     let start = Instant::now();
