@@ -241,9 +241,63 @@ pub fn part1_original(whole: &str) -> i64 {
 }
 
 
+pub fn part2(whole: &str) -> i64 {
+    // If for a given line, you take a vector that has the difference between consecutive numbers.
+    // That vector needs to follow the constraint that all values have a magnitude between 1 and 3, and,
+    // all values have the same sign. A value with the wrong sign or wrong magnitude can be removed and fused
+    // with the previous or next value (next_value += bad_value). bad values on the very edge can be removed outright.
+    // this can only be done once, and after that the constraint must pass...
+    let lines = get_lines(whole);
+    // let nums = get_numbers(&whole);
+    let mut sum = 0;
+    for line in lines {
+        let mut ok_final = false;
+        let nums = get_numbers(&line);
+        for i in 0..nums.len() {
+            let mut mutated_line = nums.clone();
+            mutated_line.remove(i);
+            let mut prev = mutated_line[0].num;
+            let increasing = mutated_line[1].num > mutated_line[0].num;
+            let mut ok = true;
+            for num in mutated_line[1..].iter() {
+                let n = num.num;
+                if increasing {
+                    if (n - prev == 0) || ( n - prev > 3) {
+                        ok = false
+                    }
+                } else if (prev - n == 0) || (prev - n > 3) {
+                    ok = false;
+                }
+                prev = n;
+            }
+            if ok {
+                ok_final = true;
+            }
+        }
+
+        let mut prev = nums[0].num;
+        let increasing = nums[1].num > nums[0].num;
+        let mut ok = true;
+        for num in nums[1..].iter() {
+            let n = num.num;
+            if increasing {
+                if (n - prev == 0) || ( n - prev > 3) {
+                    ok = false
+                }
+            } else if (prev - n == 0) || (prev - n > 3) {
+                ok = false;
+            }
+            prev = n;
+        }
+        if ok || ok_final {
+            sum += 1;
+        }
+    }
+    sum
+}
 /// AoC placement:
 /// Time 00:14:04 rank 1578
-pub fn part2(whole: &str) -> i64 {
+pub fn part2_original(whole: &str) -> i64 {
     let lines = get_lines(whole);
     // let nums = get_numbers(&whole);
     let mut sum = 0;
