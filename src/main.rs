@@ -1,6 +1,5 @@
-use core::num;
-use std::{fs, collections::{HashSet, HashMap, VecDeque}};
-use std::time::{Instant, Duration};
+#![allow(dead_code)]
+use std::time::Instant;
 use utils::*;
 mod utils;
 mod day1;

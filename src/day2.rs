@@ -1,11 +1,150 @@
+#![allow(dead_code)]
 use crate::utils::*;
 
+// roughly 122ms on my system (10000 runs)
 pub fn part1(whole: &str) -> i64 {
+    const SPACE: u16 = b' ' as u16;
+    const NL: u16 = b'\n' as u16;
+    const ZERO: u16 = b'0' as u16;
+    let mut sum = 0;
+    // ok so, the format seems to be either 1 or 2 digit numbers. Hmm.
+    let bytes = whole.as_bytes();
+    let mut i = 0;
+    // each iteration is one LINE
+    while i < bytes.len() {
+        // Assumption: each line has AT LEAST three numbers. otherwise part 2 makes no sense.
+        // So, the first 5 bytes are guaranteed to exist
+        let first = unsafe {*bytes.get_unchecked(i)} as u16;
+        let second = unsafe {*bytes.get_unchecked(i+1)} as u16;
+
+        let num1 = if second > SPACE {
+            // 2-digit number
+            i += 3;
+            // (first - ZERO) * 10 + (second - ZERO)
+            // (a - c) * 10 + (b - c) * 1 = 
+            // a * 10 + b - 11 * c
+            first * 10 + second - 11 * ZERO
+        } else {
+            // 1-digit number
+            i += 2;
+            first - ZERO
+        };
+        // note: i pointing at the start of number 2.
+        let first = unsafe {*bytes.get_unchecked(i)} as u16;
+        let second = unsafe {*bytes.get_unchecked(i+1)} as u16;
+
+        let num2 = if second > SPACE {
+            i += 3;
+            first * 10 + second - 11 * ZERO
+        } else {
+            i += 2;
+            first - ZERO
+        };
+        // note: i pointing at the start of number 3.
+        if num2 > num1 {
+            // if the numbers are equal, this will wrap.
+            let diff = (num2 - num1).wrapping_sub(1);
+            if diff > 2 {
+                // failure: go to next line.
+                while i < bytes.len() && bytes[i] as u16 != NL {
+                    i += 1;
+                }
+                i += 1;
+                if i >= bytes.len() {break;}
+                continue;
+            }
+            // start looping, looking for increasing order.
+            // each iteration, i is pointing at the start of the number.
+            let mut prev = num2;
+            loop {
+                let first = unsafe {*bytes.get_unchecked(i)} as u16;
+                debug_assert!(first != NL);
+                debug_assert!(first != SPACE);
+                let second = unsafe {*bytes.get_unchecked(i+1)} as u16;
+        
+                let num = if second > SPACE {
+                    i += 2;
+                    first * 10 + second - 11 * ZERO
+                } else {
+                    i += 1;
+                    first - ZERO
+                };
+                // if prev >= num, this will be huge and not pass the next test
+                let diff = num.wrapping_sub(prev+1);
+                if diff > 2 {
+                    // failure: go to next line.
+                    while i < bytes.len() && bytes[i] as u16 != NL {
+                        i += 1;
+                    }
+                    i += 1;
+                    break;
+                }
+                // i will be pointing at a space, NL, or EOF. if NL or EOF, exit this loop, and also, gg the line was fine!
+                if i >= bytes.len() || bytes[i] as u16 == NL {
+                    sum += 1;
+                    i += 1;
+                    break;
+                }
+                i += 1;
+                prev = num;
+            }
+        } else {
+            // if the numbers are equal, this will wrap.
+            let diff = (num1 - num2).wrapping_sub(1);
+            if diff > 2 {
+                // failure: go to next line.
+                while i < bytes.len() && bytes[i] as u16 != NL {
+                    i += 1;
+                }
+                i += 1;
+                if i >= bytes.len() {break;}
+                continue;
+            }
+            // start looping, looking for decreasing order.
+            // each iteration, i is pointing at the start of the number.
+            let mut prev = num2;
+            loop {
+                let first = unsafe {*bytes.get_unchecked(i)} as u16;
+                let second = unsafe {*bytes.get_unchecked(i+1)} as u16;
+        
+                let num = if second > SPACE {
+                    i += 2;
+                    first * 10 + second - 11 * ZERO
+                } else {
+                    i += 1;
+                    first - ZERO
+                };
+                // if prev =< num, this will be huge and not pass the next test
+                let diff = prev.wrapping_sub(num+1);
+                if diff > 2 {
+                    // failure: go to next line.
+                    while i < bytes.len() && bytes[i] as u16 != NL {
+                        i += 1;
+                    }
+                    i += 1;
+                    break;
+                }
+                // i will be pointing at a space, NL, or EOF. if NL or EOF, exit this loop, and also, gg the line was fine!
+                if i >= bytes.len() || bytes[i] as u16 == NL {
+                    sum += 1;
+                    i += 1;
+                    break;
+                }
+                i += 1;
+                prev = num;
+            }
+        }
+    }
+    sum
+}
+
+// roughly 170ms on my system (10000 runs)
+pub fn part1_attempt(whole: &str) -> i64 {
     const SPACE: u8 = b' ';
     const NL: u8 = b'\n';
     const ZERO: u8 = b'0';
-    assert!(SPACE > NL);
-    assert!(b'0' > SPACE);
+    // assert!(SPACE > NL);
+    // assert!(b'0' > SPACE);
     let mut sum = 0;
     // ok so, the format seems to be either 1 or 2 digit numbers. Hmm.
     let bytes = whole.as_bytes();
@@ -28,7 +167,7 @@ pub fn part1(whole: &str) -> i64 {
             let diff = if up == 1 {num - actual_prev} else {actual_prev - num};
             if diff > 0 && diff <= 3 {
                 // ok: but does direction match?
-                if direction as u8 == 2 {
+                if direction == 2 {
                     direction = up;
                 } else if direction != up {
                     // failure: rush through to the next line
@@ -75,7 +214,7 @@ pub fn part1(whole: &str) -> i64 {
 /// AoC placement:
 /// Time 00:07:26 rank 1410
 pub fn part1_original(whole: &str) -> i64 {
-    let lines = get_lines(&whole);
+    let lines = get_lines(whole);
     // let nums = get_numbers(&whole);
     let mut sum = 0;
     for line in lines {
@@ -89,10 +228,8 @@ pub fn part1_original(whole: &str) -> i64 {
                 if (n - prev == 0) || ( n - prev > 3) {
                     ok = false
                 }
-            } else {
-                if (prev - n == 0) || (prev - n > 3) {
-                    ok = false;
-                }
+            } else if (prev - n == 0) || (prev - n > 3) {
+                ok = false;
             }
             prev = n;
         }
@@ -107,7 +244,7 @@ pub fn part1_original(whole: &str) -> i64 {
 /// AoC placement:
 /// Time 00:14:04 rank 1578
 pub fn part2(whole: &str) -> i64 {
-    let lines = get_lines(&whole);
+    let lines = get_lines(whole);
     // let nums = get_numbers(&whole);
     let mut sum = 0;
     for line in lines {
@@ -125,10 +262,8 @@ pub fn part2(whole: &str) -> i64 {
                     if (n - prev == 0) || ( n - prev > 3) {
                         ok = false
                     }
-                } else {
-                    if (prev - n == 0) || (prev - n > 3) {
-                        ok = false;
-                    }
+                } else if (prev - n == 0) || (prev - n > 3) {
+                    ok = false;
                 }
                 prev = n;
             }
@@ -146,10 +281,8 @@ pub fn part2(whole: &str) -> i64 {
                 if (n - prev == 0) || ( n - prev > 3) {
                     ok = false
                 }
-            } else {
-                if (prev - n == 0) || (prev - n > 3) {
-                    ok = false;
-                }
+            } else if (prev - n == 0) || (prev - n > 3) {
+                ok = false;
             }
             prev = n;
         }
