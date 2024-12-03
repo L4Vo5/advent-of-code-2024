@@ -247,100 +247,128 @@ pub fn part2(whole: &str) -> i64 {
     // all values have the same sign. A value with the wrong sign or wrong magnitude can be removed and fused
     // with the previous or next value (next_value += bad_value). bad values on the very edge can be removed outright.
     // this can only be done once, and after that the constraint must pass...
-    let lines = get_lines(whole);
-    // let nums = get_numbers(&whole);
+    // is that really a good way to solve it tho? hmmmm
+
+
+    const SPACE: u16 = b' ' as u16;
+    const NL: u16 = b'\n' as u16;
+    const ZERO: u16 = b'0' as u16;
     let mut sum = 0;
-    for line in lines {
-        let mut ok_final = false;
-        let nums = get_numbers(&line);
-        for i in 0..nums.len() {
-            let mut mutated_line = nums.clone();
-            mutated_line.remove(i);
-            let mut prev = mutated_line[0].num;
-            let increasing = mutated_line[1].num > mutated_line[0].num;
-            let mut ok = true;
-            for num in mutated_line[1..].iter() {
-                let n = num.num;
-                if increasing {
-                    if (n - prev == 0) || ( n - prev > 3) {
-                        ok = false
-                    }
-                } else if (prev - n == 0) || (prev - n > 3) {
-                    ok = false;
+    let bytes = whole.as_bytes();
+    let mut i = 0;
+    // each iteration is one LINE
+    let mut nums = [0; 12];
+    let mut diffs = [0; 11];
+    while i < bytes.len() {
+        // Assumption: each line has AT LEAST *FOUR* numbers. I sure hope that's true.
+
+        // Actually, for now let's just collect the numbers to get a fine answer quickly.
+        let mut j = 0;
+        while i < bytes.len() {
+            let first = unsafe {*bytes.get_unchecked(i)} as u16;
+            let second = unsafe {*bytes.get_unchecked(i+1)} as u16;
+            if second > SPACE {
+                let num = first * 10 + second - 11 * ZERO;
+                nums[j] = num;
+                j += 1;
+                i += 2;
+                if i >= bytes.len() || bytes[i] as u16 == NL {
+                    i += 1;
+                    break;
                 }
-                prev = n;
-            }
-            if ok {
-                ok_final = true;
-            }
+                i += 1;
+            } else {
+                let num = first - ZERO;
+                nums[j] = num;
+                j += 1;
+                i += 2;
+                if second == NL {
+                    break;
+                }
+            };
         }
 
-        let mut prev = nums[0].num;
-        let increasing = nums[1].num > nums[0].num;
-        let mut ok = true;
-        for num in nums[1..].iter() {
-            let n = num.num;
-            if increasing {
-                if (n - prev == 0) || ( n - prev > 3) {
-                    ok = false
-                }
-            } else if (prev - n == 0) || (prev - n > 3) {
-                ok = false;
-            }
-            prev = n;
+        // Now the actual logic... fine, I'll analyze the differences
+        let amount = j;
+        let diff_amount = amount - 1;
+        let mut tendency = 0;
+        
+        for j in 0..diff_amount {
+            tendency += (nums[j+1] as i16 - nums[j] as i16).signum() as i8;
+            diffs[j] = nums[j+1] as i16 - nums[j] as i16; 
         }
-        if ok || ok_final {
-            sum += 1;
-        }
-    }
-    sum
-}
-/// AoC placement:
-/// Time 00:14:04 rank 1578
-pub fn part2_original(whole: &str) -> i64 {
-    let lines = get_lines(whole);
-    // let nums = get_numbers(&whole);
-    let mut sum = 0;
-    for line in lines {
-        let mut ok_final = false;
-        let nums = get_numbers(&line);
-        for i in 0..nums.len() {
-            let mut mutated_line = nums.clone();
-            mutated_line.remove(i);
-            let mut prev = mutated_line[0].num;
-            let increasing = mutated_line[1].num > mutated_line[0].num;
-            let mut ok = true;
-            for num in mutated_line[1..].iter() {
-                let n = num.num;
-                if increasing {
-                    if (n - prev == 0) || ( n - prev > 3) {
-                        ok = false
+        let mut mistakes = 0;
+        let mut j = 0;
+        if tendency > 0 {
+            // should all be positive
+            while j < diff_amount {
+                if diffs[j] > 3 || diffs[j] <= 0 {
+                    mistakes += 1;
+                    if mistakes == 2 {
+                        break;
                     }
-                } else if (prev - n == 0) || (prev - n > 3) {
-                    ok = false;
+                    // fuse left or right? whichever one saves an adjacent diff
+                    // left diff will have saved itself, so we only care about helping right
+                    // so, see if fusing with right is OK, otherwise go left
+                    if j == diff_amount - 1 {
+                    } else {
+                        // ok, first try fusing right
+                        let right_fused_diff = diffs[j+1] + diffs[j];
+                        if right_fused_diff > 3 || right_fused_diff <= 0 {
+                            // RIP. what about left?
+                            if j != 0 {
+                                let left_fused_diff = diffs[j-1] + diffs[j];
+                                if left_fused_diff > 3 || left_fused_diff <= 0 {
+                                    // RIP.
+                                    mistakes += 1;
+                                    break;
+                                }
+                            }
+                        } else {
+                            // ok, fuse with right, skip it too.
+                            j += 2;
+                            continue;
+                        }
+                    }
                 }
-                prev = n;
+                j += 1;
             }
-            if ok {
-                ok_final = true;
+        } else {
+            // should all be negative
+            while j < diff_amount {
+                if diffs[j] < -3 || diffs[j] >= 0 {
+                    mistakes += 1;
+                    if mistakes == 2 {
+                        break;
+                    }
+                    // fuse left or right? whichever one saves an adjacent diff
+                    // left diff will have saved itself, so we only care about helping right
+                    // so, see if fusing with right is OK, otherwise go left
+                    if j == diff_amount - 1 {
+                    } else {
+                        // ok, first try fusing right
+                        let right_fused_diff = diffs[j+1] + diffs[j];
+                        if right_fused_diff < -3 || right_fused_diff >= 0 {
+                            // RIP. what about left?
+                            if j != 0 {
+                                let left_fused_diff = diffs[j-1] + diffs[j];
+                                if left_fused_diff < -3 || left_fused_diff >= 0 {
+                                    // RIP.
+                                    mistakes += 1;
+                                    break;
+                                }
+                            }
+                        } else {
+                            // ok, fuse with right, skip it too.
+                            j += 2;
+                            continue;
+                        }
+                    }
+                }
+                j += 1;
             }
         }
-
-        let mut prev = nums[0].num;
-        let increasing = nums[1].num > nums[0].num;
-        let mut ok = true;
-        for num in nums[1..].iter() {
-            let n = num.num;
-            if increasing {
-                if (n - prev == 0) || ( n - prev > 3) {
-                    ok = false
-                }
-            } else if (prev - n == 0) || (prev - n > 3) {
-                ok = false;
-            }
-            prev = n;
-        }
-        if ok || ok_final {
+        if mistakes <= 1 {
             sum += 1;
         }
     }
