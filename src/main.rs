@@ -11,7 +11,7 @@ mod day4;
 
 fn main() {
     let day = 3;
-    let part = 1;
+    let part = 2;
 
     let contents = read_file(&day.to_string());
     let start = Instant::now();
@@ -28,7 +28,6 @@ fn main() {
             (_, _) => panic!(),
         };
         std::hint::black_box(result);
-        // println!("{result}");
     }
     let end = Instant::now();
     let duration = end - start;
