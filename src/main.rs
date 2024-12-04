@@ -28,6 +28,7 @@ fn main() {
             (_, _) => panic!(),
         };
         std::hint::black_box(result);
+        // println!("result: {result}");
     }
     let end = Instant::now();
     let duration = end - start;

@@ -4,6 +4,7 @@ use ahash::{HashMap, HashMapExt};
 use memchr::memmem;
 
 
+// takes roughly 118ms for 10k iterations
 pub fn part1(whole: &str) -> i64 {
     let whole = whole.as_bytes();
     let mut sum = 0;
@@ -53,6 +54,7 @@ pub fn part1(whole: &str) -> i64 {
 }
 
 // intended result: 70478672
+// takes roughly 66ms for 10k iterations
 pub fn part2(whole: &str) -> i64 {
     let mut whole = whole.as_bytes();
     let mut sum = 0;
