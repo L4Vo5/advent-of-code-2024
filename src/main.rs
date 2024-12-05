@@ -12,7 +12,7 @@ mod day5;
 
 fn main() {
     let day = 5;
-    let part = 1;
+    let part = 2;
 
     let contents = read_file(&day.to_string());
     let start = Instant::now();
