@@ -11,6 +11,10 @@ pub fn get_lines(content: &str) -> Vec<String> {
     content.split("\n").map(|s| s.to_string()).collect()
 }
 
+pub fn get_grid(content: &str) -> Vec<Vec<char>> {
+    content.split("\n").map(|l| l.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>()
+}
+
 pub fn split_collect<'a>(s: &'a str, c: &str) -> Vec<&'a str> {
     s.split(c).collect()
 }

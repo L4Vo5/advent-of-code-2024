@@ -9,15 +9,15 @@ pub fn part1(whole: &str) -> i64 {
     let lines = get_lines(&whole);
     let nums = get_numbers(&whole);
     let mut sum = 0;
-    let lines = lines.iter().map(|l| l.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
-    let height = lines.len();
-    let width = lines[0].len();
+    let grid = get_grid(whole);
+    let height = grid.len();
+    let width = grid[0].len();
     let directions = [
         (1, 1), (1, 0), (1, -1), (0, 1), (0, -1), (-1, -1), (-1, 0), (-1, 1)
     ];
     for x in 0..width {
         for y in 0..height {
-            if lines[y][x] == 'X' {
+            if grid[y][x] == 'X' {
                 let x = x as i64;
                 let y = y as i64;
                 for dir in directions {
@@ -36,7 +36,7 @@ pub fn part1(whole: &str) -> i64 {
                         let yy2 = yy2 as usize;
                         let xx3 = xx3 as usize;
                         let yy3 = yy3 as usize;
-                        if lines[yy1][xx1] == 'M' && lines[yy2][xx2] == 'A' && lines[yy3][xx3] == 'S' {
+                        if grid[yy1][xx1] == 'M' && grid[yy2][xx2] == 'A' && grid[yy3][xx3] == 'S' {
                             sum += 1;
                         }
                     }
@@ -54,15 +54,15 @@ pub fn part2(whole: &str) -> i64 {
     let lines = get_lines(&whole);
     let nums = get_numbers(&whole);
     let mut sum = 0;
-    let lines = lines.iter().map(|l| l.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
-    let height = lines.len();
-    let width = lines[0].len();
+    let grid = get_grid(whole);
+    let height = grid.len();
+    let width = grid[0].len();
     let directions = [
         (1, 1), (1, 0), (1, -1), (0, 1), (0, -1), (-1, -1), (-1, 0), (-1, 1)
     ];
     for x in 0..width {
         for y in 0..height {
-            if lines[y][x] == 'M' {
+            if grid[y][x] == 'M' {
                 let x = x as i64;
                 let y = y as i64;
                 let positions = [
@@ -81,7 +81,7 @@ pub fn part2(whole: &str) -> i64 {
                     for pos in positions.iter().copied() {
                         let xx = pos.0;
                         let yy = pos.1;
-                        if lines[yy as usize][xx as usize] != pos.2 {
+                        if grid[yy as usize][xx as usize] != pos.2 {
                             ok = false;
                         }
                     }
@@ -105,7 +105,7 @@ pub fn part2(whole: &str) -> i64 {
                     for pos in positions.iter().copied() {
                         let xx = pos.0;
                         let yy = pos.1;
-                        if lines[yy as usize][xx as usize] != pos.2 {
+                        if grid[yy as usize][xx as usize] != pos.2 {
                             ok = false;
                         }
                     }
@@ -129,7 +129,7 @@ pub fn part2(whole: &str) -> i64 {
                     for pos in positions.iter().copied() {
                         let xx = pos.0;
                         let yy = pos.1;
-                        if lines[yy as usize][xx as usize] != pos.2 {
+                        if grid[yy as usize][xx as usize] != pos.2 {
                             ok = false;
                         }
                     }
@@ -153,7 +153,7 @@ pub fn part2(whole: &str) -> i64 {
                     for pos in positions.iter().copied() {
                         let xx = pos.0;
                         let yy = pos.1;
-                        if lines[yy as usize][xx as usize] != pos.2 {
+                        if grid[yy as usize][xx as usize] != pos.2 {
                             ok = false;
                         }
                     }
