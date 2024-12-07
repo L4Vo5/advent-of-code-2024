@@ -9,11 +9,15 @@ mod day3;
 mod day4;
 mod day5;
 mod day6;
+mod day7;
+mod day8;
+mod day9;
+mod day10;
 
 
 fn main() {
-    let day = 6;
-    let part = 2;
+    let day = 7;
+    let part = 1;
 
     let contents = read_file(&day.to_string());
     let start = Instant::now();
@@ -31,6 +35,14 @@ fn main() {
             (5, 2) => day5::part2(&contents),
             (6, 1) => day6::part1(&contents),
             (6, 2) => day6::part2(&contents),
+            (7, 1) => day7::part1(&contents),
+            (7, 2) => day7::part2(&contents),
+            (8, 1) => day8::part1(&contents),
+            (8, 2) => day8::part2(&contents),
+            (9, 1) => day9::part1(&contents),
+            (9, 2) => day9::part2(&contents),
+            (10, 1) => day10::part1(&contents),
+            (10, 2) => day10::part2(&contents),
             (_, _) => panic!(),
         };
         // std::hint::black_box(result);
