@@ -9,6 +9,8 @@ pub fn part1(whole: &str) -> i64 {
     let lines = get_lines(&whole);
     let nums = get_numbers(&whole);
     let grid = get_grid(whole);
+    let width = grid[0].len();
+    let height = grid.len();
     let mut sum = 0;
     sum as i64
 }
@@ -19,6 +21,8 @@ pub fn part2(whole: &str) -> i64 {
     let lines = get_lines(&whole);
     let nums = get_numbers(&whole);
     let grid = get_grid(whole);
+    let width = grid[0].len();
+    let height = grid.len();
     let mut sum = 0;
     sum as i64
 }
