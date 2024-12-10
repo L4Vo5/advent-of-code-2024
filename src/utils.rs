@@ -15,6 +15,10 @@ pub fn get_grid(content: &str) -> Vec<Vec<char>> {
     content.split("\n").map(|l| l.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>()
 }
 
+pub fn get_grid_b(content: &str) -> Vec<Vec<u8>> {
+    content.split("\n").map(|l| l.bytes().collect::<Vec<u8>>()).collect::<Vec<Vec<u8>>>()
+}
+
 pub fn split_collect<'a>(s: &'a str, c: &str) -> Vec<&'a str> {
     s.split(c).collect()
 }

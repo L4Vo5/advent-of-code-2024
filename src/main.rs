@@ -16,7 +16,7 @@ mod day10;
 
 
 fn main() {
-    let day = 9;
+    let day = 10;
     // let part = 1;
 
     for part in 1..=2 {
