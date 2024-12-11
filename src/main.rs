@@ -13,10 +13,11 @@ mod day7;
 mod day8;
 mod day9;
 mod day10;
+mod day11;
 
 
 fn main() {
-    let day = 10;
+    let day = 11;
     // let part = 1;
 
     for part in 1..=2 {
@@ -52,6 +53,8 @@ fn run(day: i32, part: i32) -> i64 {
         (9, 2) => day9::part2(&contents),
         (10, 1) => day10::part1(&contents),
         (10, 2) => day10::part2(&contents),
+        (11, 1) => day11::part1(&contents),
+        (11, 2) => day11::part2(&contents),
         (_, _) => panic!(),
     }
 }
