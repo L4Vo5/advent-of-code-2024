@@ -43,9 +43,9 @@ pub fn get_numbers(s: &str) -> Vec<NumberPos> {
                     last.length += 1;
                 } else {
                     let mut sign = 1;
-                    if i != 0 && &s[i-1..=i-1] == "-" {sign = -1;}
+                    if i != 0 && &s[real_i-1..=real_i-1] == "-" {sign = -1;}
                     let s_num = this_num as i64 * sign;
-                    v.push(NumberPos { num: this_num, s_num, i, x, y, real_i, length: if sign == 1 {1} else {2}, sign})
+                    v.push(NumberPos { num: this_num, s_num, i, x, y, real_i, length: if sign == 1 {1} else {2}, sign});
                 }
                 last_was_num = true;
             } else {
